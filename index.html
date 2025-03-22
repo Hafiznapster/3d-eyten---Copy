@@ -1243,15 +1243,52 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const cards = document.querySelectorAll(".service-card");
-            
+
             cards.forEach(card => {
                 card.addEventListener("mousemove", (e) => {
                     const rect = card.getBoundingClientRect();
                     const x = e.clientX - rect.left;
                     const y = e.clientY - rect.top;
-                    
+
                     card.style.setProperty("--mouse-x", `${x}px`);
                     card.style.setProperty("--mouse-y", `${y}px`);
+                });
+            });
+
+            // Smooth scrolling function
+            function smoothScroll(target, duration) {
+                var targetElement = document.querySelector(target);
+                var targetPosition = targetElement.offsetTop;
+                var startPosition = window.pageYOffset;
+                var distance = targetPosition - startPosition;
+                var startTime = null;
+
+                function animation(currentTime) {
+                    if (startTime === null) startTime = currentTime;
+                    var timeElapsed = currentTime - startTime;
+                    var run = ease(timeElapsed, startPosition, distance, duration);
+                    window.scrollTo(0, run);
+                    if (timeElapsed < duration) requestAnimationFrame(animation);
+                }
+
+                // Easing function
+                function ease(t, b, c, d) {
+                    t /= d / 2;
+                    if (t < 1) return c / 2 * t * t + b;
+                    t--;
+                    return -c / 2 * (t * (t - 2) - 1) + b;
+                }
+
+                requestAnimationFrame(animation);
+            }
+
+            // Attach smooth scroll to navigation links
+            const navLinks = document.querySelectorAll('nav a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = this.getAttribute('href');
+                    smoothScroll(target, 500); // Adjust duration as needed
                 });
             });
         });
